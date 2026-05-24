@@ -38,7 +38,8 @@ document.querySelector('#foodForm input[name="photo"]').addEventListener("change
 
 document.querySelector("#foodForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const form = new FormData(event.currentTarget);
+  const formElement = event.currentTarget;
+  const form = new FormData(formElement);
   const description = form.get("description").trim();
   const entry = {
     id: crypto.randomUUID(),
@@ -50,7 +51,7 @@ document.querySelector("#foodForm").addEventListener("submit", async (event) => 
   };
   await saveFoodEntry(entry);
   selectedFoodPhoto = null;
-  event.currentTarget.reset();
+  formElement.reset();
   renderFoodPhotoPreview();
   saveAndRender();
 });
@@ -75,7 +76,8 @@ document.querySelector("#estimateExercise").addEventListener("click", async () =
 
 document.querySelector("#exerciseForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const form = new FormData(event.currentTarget);
+  const formElement = event.currentTarget;
+  const form = new FormData(formElement);
   const exercise = {
     id: crypto.randomUUID(),
     date: today,
@@ -91,13 +93,14 @@ document.querySelector("#exerciseForm").addEventListener("submit", async (event)
     }),
   };
   await saveExerciseEntry(exercise);
-  event.currentTarget.reset();
+  formElement.reset();
   saveAndRender();
 });
 
 document.querySelector("#weightForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const form = new FormData(event.currentTarget);
+  const formElement = event.currentTarget;
+  const form = new FormData(formElement);
   const weight = Number(form.get("weight"));
   const height = Number(form.get("height"));
   await saveWeightEntry({
@@ -107,7 +110,7 @@ document.querySelector("#weightForm").addEventListener("submit", async (event) =
     height,
     bmi: calculateBmi(weight, height),
   });
-  event.currentTarget.reset();
+  formElement.reset();
   document.querySelector('input[name="date"]').value = today;
   prefillLatestHeight();
   saveAndRender();
