@@ -102,11 +102,11 @@
           <form class="entry-form" id="foodForm">
             <label>
               Meal
-              <input name="meal" placeholder="Breakfast, lunch, snack" required />
+              <input name="meal" placeholder="Breakfast, lunch, snack" />
             </label>
             <label>
               What did you eat?
-              <textarea name="description" placeholder="Optional notes, e.g. chicken salad with rice and avocado"></textarea>
+              <textarea name="description" placeholder="Type what you ate, e.g. chicken salad with rice and avocado"></textarea>
             </label>
             <label>
               Calories
@@ -149,6 +149,10 @@
                 <option selected>Moderate</option>
                 <option>Hard</option>
               </select>
+            </label>
+            <label>
+              Date
+              <input name="date" type="date" required />
             </label>
             <label>
               Workout link
@@ -252,6 +256,6 @@
     </template>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./app.js?v=exercise-save-fix"></script>
+    <script src="./app.js?v=food-ai-text-support"></script>
   </body>
 </html>

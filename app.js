@@ -24,7 +24,9 @@ document.querySelector("#todayLabel").textContent = new Intl.DateTimeFormat("en-
   month: "long",
 }).format(new Date());
 
-document.querySelector('input[name="date"]').value = today;
+document.querySelectorAll('input[name="date"]').forEach((input) => {
+  input.value = today;
+});
 
 document.querySelectorAll(".tab").forEach((tab) => {
   tab.addEventListener("click", () => setView(tab.dataset.view));
@@ -41,12 +43,15 @@ document.querySelector("#foodForm").addEventListener("submit", async (event) => 
   const formElement = event.currentTarget;
   const form = new FormData(formElement);
   const description = form.get("description").trim();
+  if (!description && !selectedFoodPhoto) return;
+  const mealName = form.get("meal").trim() || inferMealName();
+  const calories = Number(form.get("calories")) || (await estimateFoodWithAI(description, selectedFoodPhoto));
   const entry = {
     id: crypto.randomUUID(),
     date: today,
-    meal: form.get("meal").trim(),
+    meal: mealName,
     description,
-    calories: Number(form.get("calories")) || estimateCalories(description, selectedFoodPhoto),
+    calories,
     photo: selectedFoodPhoto,
   };
   await saveFoodEntry(entry);
@@ -80,7 +85,7 @@ document.querySelector("#exerciseForm").addEventListener("submit", async (event)
   const form = new FormData(formElement);
   const exercise = {
     id: crypto.randomUUID(),
-    date: today,
+    date: form.get("date"),
     name: form.get("name").trim(),
     minutes: Number(form.get("minutes")),
     intensity: form.get("intensity"),
@@ -94,6 +99,7 @@ document.querySelector("#exerciseForm").addEventListener("submit", async (event)
   };
   await saveExerciseEntry(exercise);
   formElement.reset();
+  formElement.elements.date.value = today;
   saveAndRender();
 });
 
@@ -111,7 +117,7 @@ document.querySelector("#weightForm").addEventListener("submit", async (event) =
     bmi: calculateBmi(weight, height),
   });
   formElement.reset();
-  document.querySelector('input[name="date"]').value = today;
+  formElement.elements.date.value = today;
   prefillLatestHeight();
   saveAndRender();
 });
@@ -719,6 +725,14 @@ function sortByNewest(a, b) {
 
 function startOfDay(date) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function inferMealName() {
+  const hour = new Date().getHours();
+  if (hour < 11) return "Breakfast";
+  if (hour < 16) return "Lunch";
+  if (hour < 21) return "Dinner";
+  return "Snack";
 }
 
 function prefillLatestHeight() {
