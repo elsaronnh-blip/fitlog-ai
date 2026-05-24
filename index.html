@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FitLog AI</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">F</div>
+          <div>
+            <h1>FitLog AI</h1>
+            <p>Weight, meals, and training in one place.</p>
+          </div>
+        </div>
+
+        <nav class="tabs" aria-label="Main views">
+          <button class="tab is-active" data-view="dashboard" aria-label="Dashboard">
+            <span>⌂</span>
+            Dashboard
+          </button>
+          <button class="tab" data-view="food" aria-label="Food">
+            <span>◒</span>
+            Food
+          </button>
+          <button class="tab" data-view="exercise" aria-label="Exercise">
+            <span>↯</span>
+            Exercise
+          </button>
+          <button class="tab" data-view="weight" aria-label="Weight">
+            <span>◇</span>
+            Weight
+          </button>
+          <button class="tab" data-view="settings" aria-label="Settings">
+            <span>⚙</span>
+            Sync
+          </button>
+        </nav>
+      </aside>
+
+      <main>
+        <section class="topbar">
+          <div>
+            <p class="eyebrow" id="todayLabel"></p>
+            <h2 id="viewTitle">Dashboard</h2>
+          </div>
+          <div class="quick-stats">
+            <div>
+              <span id="todayCalories">0</span>
+              <small>calories today</small>
+            </div>
+            <div>
+              <span id="todayExercise">0</span>
+              <small>active min</small>
+            </div>
+          </div>
+        </section>
+
+        <section class="view is-visible" id="dashboard">
+          <div class="metric-grid">
+            <article class="metric">
+              <span>Current weight</span>
+              <strong id="currentWeight">--</strong>
+            </article>
+            <article class="metric">
+              <span>Current BMI</span>
+              <strong id="currentBmi">--</strong>
+            </article>
+            <article class="metric">
+              <span>7 day food</span>
+              <strong id="weekCalories">0 cal</strong>
+            </article>
+            <article class="metric">
+              <span>7 day training</span>
+              <strong id="weekExercise">0 min</strong>
+            </article>
+          </div>
+
+          <section class="panel chart-panel">
+            <div class="panel-heading">
+              <h3>BMI trend</h3>
+              <span id="bmiTrendNote">Add weight and height to see BMI movement.</span>
+            </div>
+            <canvas id="bmiChart" width="900" height="300" aria-label="BMI trend chart"></canvas>
+          </section>
+
+          <section class="panel chart-panel">
+            <div class="panel-heading">
+              <h3>Weight trend</h3>
+              <span id="weightTrendNote">Add two weight entries to see movement.</span>
+            </div>
+            <canvas id="weightChart" width="900" height="300" aria-label="Weight trend chart"></canvas>
+          </section>
+
+          <section class="activity-strip" id="recentActivity"></section>
+        </section>
+
+        <section class="view" id="food">
+          <form class="entry-form" id="foodForm">
+            <label>
+              Meal
+              <input name="meal" placeholder="Breakfast, lunch, snack" required />
+            </label>
+            <label>
+              What did you eat?
+              <textarea name="description" placeholder="Optional notes, e.g. chicken salad with rice and avocado"></textarea>
+            </label>
+            <label>
+              Calories
+              <input name="calories" inputmode="numeric" pattern="[0-9]*" placeholder="Use estimate" />
+            </label>
+            <label class="photo-picker">
+              Meal photo
+              <input name="photo" type="file" accept="image/*" capture="environment" />
+              <span>Take photo or choose image</span>
+            </label>
+            <div class="photo-preview" id="foodPhotoPreview" aria-live="polite">
+              <span>No photo selected</span>
+            </div>
+            <button type="button" class="secondary" id="estimateFood">AI estimate</button>
+            <button type="submit">Save food</button>
+          </form>
+          <section class="panel">
+            <div class="panel-heading">
+              <h3>Food log</h3>
+              <button class="icon-button" id="clearFood" aria-label="Clear food log">×</button>
+            </div>
+            <div class="log-list" id="foodList"></div>
+          </section>
+        </section>
+
+        <section class="view" id="exercise">
+          <form class="entry-form" id="exerciseForm">
+            <label>
+              Exercise name
+              <input name="name" placeholder="Run, gym, yoga" required />
+            </label>
+            <label>
+              Minutes
+              <input name="minutes" inputmode="numeric" pattern="[0-9]*" required />
+            </label>
+            <label>
+              Intensity
+              <select name="intensity">
+                <option>Easy</option>
+                <option selected>Moderate</option>
+                <option>Hard</option>
+              </select>
+            </label>
+            <label>
+              Workout link
+              <input name="link" type="url" placeholder="https://youtube.com/..." />
+            </label>
+            <label>
+              Calories burned
+              <input name="calories" inputmode="numeric" pattern="[0-9]*" placeholder="Use estimate" />
+            </label>
+            <button type="button" class="secondary" id="estimateExercise">Auto calculate</button>
+            <button type="submit">Save exercise</button>
+          </form>
+          <section class="panel">
+            <div class="panel-heading">
+              <h3>Exercise log</h3>
+              <button class="icon-button" id="clearExercise" aria-label="Clear exercise log">×</button>
+            </div>
+            <div class="log-list" id="exerciseList"></div>
+          </section>
+        </section>
+
+        <section class="view" id="weight">
+          <form class="entry-form compact" id="weightForm">
+            <label>
+              Weight value
+              <input name="weight" inputmode="decimal" pattern="[0-9]+([.][0-9]+)?" placeholder="kg" required />
+            </label>
+            <label>
+              Height
+              <input name="height" inputmode="decimal" pattern="[0-9]+([.][0-9]+)?" placeholder="cm" required />
+            </label>
+            <label>
+              Date
+              <input name="date" type="date" required />
+            </label>
+            <button type="submit">Save weight</button>
+          </form>
+          <section class="panel">
+            <div class="panel-heading">
+              <h3>Weight log</h3>
+              <button class="icon-button" id="clearWeight" aria-label="Clear weight log">×</button>
+            </div>
+            <div class="log-list" id="weightList"></div>
+          </section>
+        </section>
+
+        <section class="view" id="settings">
+          <section class="panel auth-panel">
+            <div>
+              <h3>Account</h3>
+              <p id="authStatus">Checking sign-in status...</p>
+            </div>
+            <form class="auth-form" id="authForm">
+              <label>
+                Email
+                <input name="email" type="email" autocomplete="email" placeholder="you@example.com" />
+              </label>
+              <label>
+                Password
+                <input name="password" type="password" autocomplete="current-password" placeholder="Password" />
+              </label>
+              <button type="button" id="signIn">Sign in</button>
+              <button type="button" class="secondary" id="signUp">Sign up</button>
+              <button type="button" class="danger" id="signOut">Sign out</button>
+            </form>
+          </section>
+          <section class="panel settings-panel">
+            <div>
+              <h3>Cloud sync plan</h3>
+              <p>
+                Sign in to load and save your food, exercise, weight, BMI, and meal photos with Supabase. Signed-out
+                data is still kept in this browser.
+              </p>
+            </div>
+            <div class="settings-actions">
+              <button id="syncToCloud">Sync local data to cloud</button>
+              <button id="exportData">Export data</button>
+              <label class="import-button">
+                Import data
+                <input id="importData" type="file" accept="application/json" />
+              </label>
+            </div>
+          </section>
+          <section class="panel settings-panel">
+            <div>
+              <h3>AI calorie endpoint</h3>
+              <p>
+                In production, send meal text and the saved meal photo to your backend, call OpenAI there, validate the
+                JSON estimate, then save the calories with the meal. Never put a private API key in this browser code.
+              </p>
+            </div>
+            <pre><code>POST /api/estimate-calories
+{ "meal": "chicken salad with rice and avocado", "photo": "..." }</code></pre>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <template id="emptyState">
+      <div class="empty">No entries yet.</div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
